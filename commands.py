@@ -23,7 +23,8 @@ class Commands(object):
 
             reply = "'%s' by %s" % (track, artist)
         except AttributeError:
-            self.bot.msg(contact, "username for %s not set right, use !set")
+            self.bot.msg(contact,
+                         "username for %s not set, use !set" % contact.nick)
             return
         self.bot.msg(contact, reply)
 
