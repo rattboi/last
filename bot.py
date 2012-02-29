@@ -17,10 +17,14 @@ class Contact(object):
         self.last = None
         self.private = False
 
+    def __repr__(self):
+        return ("IRC Contact for %s: channel=%s, nick=%s, last=%r, private=%s"
+                % (self.user, self.channel, self.nick, self.last, self.private))
+
     def _nick(self, user):
         return user.split('!', 1)[0]
 
-    def setLast(self, last):
+    def setLastUser(self, last):
         self.last = last
 
 
@@ -54,9 +58,8 @@ class Bot(irc.IRCClient):
         # update private context for replies to existing contact
         if contact:
             private = self._isPrivate(contact.nick, channel)
-            if contact.private != private:
-                contact.channel = channel
-            contact.private = self.contacts[contact.user].private = private
+            contact.channel = channel
+            contact.private = private
         # if new contact, create and set private context
         else:
             contact = Contact(user, channel)
@@ -88,7 +91,7 @@ if __name__ == "__main__":
     server = "irc.cat.pdx.edu"
     port = 6697
     nickname = "last"
-    channels = ["#botgrounds"]
+    channels = ["testing", "#botgrounds"]
     factory = BotFactory(nickname, channels)
     reactor.connectSSL(server, port, factory, ssl.ClientContextFactory())
     reactor.run()

@@ -13,37 +13,46 @@ class Commands(object):
         """shows now playing"""
         try:
             now = contact.last.get_now_playing()
-            track = now.get_name()
-            artist = now.get_artist().get_name()
-
-            if type(track) is unicode:
-                track = track.encode("utf-8")
-            if type(artist) is unicode:
-                artist = artist.encode("utf-8")
-
-            reply = "'%s' by %s" % (track, artist)
         except AttributeError:
             self.bot.msg(contact,
                          "username for %s not set, use !set" % contact.nick)
             return
+        else:
+            try:
+                track = now.get_name()
+                artist = now.get_artist().get_name()
+
+                if type(track) is unicode:
+                    track = track.encode("utf-8")
+                if type(artist) is unicode:
+                    artist = artist.encode("utf-8")
+
+                reply = "'%s' by %s" % (track, artist)
+            except AttributeError:
+                self.bot.msg(contact, "not currently scrobbling")
+                return
         self.bot.msg(contact, reply)
 
     def command_lp(self, contact, args):
         """karma's now playing"""
         try:
             now = contact.last.get_now_playing()
-            artist = now.get_artist().get_name()
-
-            if type(artist) is unicode:
-                artist = artist.encode("utf-8")
-
-            if len(artist.split()) > 1:
-                artist = "(%s)" % artist
-            pp = "%s++" % artist
         except AttributeError:
             self.bot.msg(contact,
                          "username for %s not set, use !set" % contact.nick)
             return
+        else:
+            try:
+                artist = now.get_artist().get_name()
+
+                if type(artist) is unicode:
+                    artist = artist.encode("utf-8")
+
+                if len(artist.split()) > 1:
+                    artist = "(%s)" % artist
+                pp = "%s++" % artist
+            except AttributeError:
+                self.bot.msg(contact, "not currently scrobbling")
         self.bot.msg(contact, pp)
 
     def command_set(self, contact, args):
@@ -51,7 +60,7 @@ class Commands(object):
         if len(args.split()) > 1:
             self.bot.msg(contact, "found too many args, only need <username>")
             return
-        contact.last = User(args, self.bot.last)
+        contact.setLastUser(User(args, self.bot.last))
         self.bot.msg(contact, "%s set to: %s" % (contact.nick, args))
 
     def command_help(self, contact, args):
