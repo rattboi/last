@@ -4,6 +4,8 @@ from twisted.internet import ssl, reactor
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.words.protocols import irc
 from commands import Commands
+import pylast
+import secrets
 
 
 class Contact(object):
@@ -12,14 +14,14 @@ class Contact(object):
         self.user = user
         self.channel = channel
         self.nick = self._nick(user)
-        self.lastname = None
+        self.last = None
         self.private = False
 
     def _nick(self, user):
         return user.split('!', 1)[0]
 
-    def setLastName(self, lastname):
-        self.lastname = lastname
+    def setLast(self, last):
+        self.last = last
 
 
 class Bot(irc.IRCClient):
@@ -30,6 +32,10 @@ class Bot(irc.IRCClient):
         self.factory = fact
         self.contacts = {}
         self.commands = Commands(self)
+        self.last = pylast.LastFMNetwork(api_key=secrets.API_KEY,
+                                         api_secret=secrets.API_SECRET,
+                                         username=secrets.username,
+                                         password_hash=secrets.password_hash)
 
     def _isPrivate(self, nick, channel):
         return (channel == self.nickname and nick != self.nickname)
@@ -57,7 +63,7 @@ class Bot(irc.IRCClient):
             contact.private = self._isPrivate(contact.nick, channel)
             self.contacts[contact.user] = contact
 
-        if contact.private or message.startswith("$"):
+        if contact.private or message.startswith("!"):
             self.commands.parse(contact, message)
 
 
