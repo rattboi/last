@@ -14,9 +14,7 @@ class Commands(object):
         try:
             now = contact.last.get_now_playing()
         except AttributeError:
-            self.bot.msg(contact,
-                         "username for %s not set, use !set" % contact.nick)
-            return
+            reply = "username for %s not set, use !set" % contact.nick
         else:
             try:
                 track = now.get_name()
@@ -29,8 +27,7 @@ class Commands(object):
 
                 reply = "'%s' by %s" % (track, artist)
             except AttributeError:
-                self.bot.msg(contact, "not currently scrobbling")
-                return
+                reply = "not currently scrobbling"
         self.bot.msg(contact, reply)
 
     def command_lp(self, contact, args):
@@ -38,9 +35,7 @@ class Commands(object):
         try:
             now = contact.last.get_now_playing()
         except AttributeError:
-            self.bot.msg(contact,
-                         "username for %s not set, use !set" % contact.nick)
-            return
+            reply = "username for %s not set, use !set" % contact.nick
         else:
             try:
                 artist = now.get_artist().get_name()
@@ -50,10 +45,10 @@ class Commands(object):
 
                 if len(artist.split()) > 1:
                     artist = "(%s)" % artist
-                pp = "%s++" % artist
+                reply = "%s++" % artist
             except AttributeError:
-                self.bot.msg(contact, "not currently scrobbling")
-        self.bot.msg(contact, pp)
+                reply = "not currently scrobbling"
+        self.bot.msg(contact, reply)
 
     def command_set(self, contact, args):
         """sets <username> for nick"""
