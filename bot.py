@@ -90,8 +90,8 @@ class BotFactory(ReconnectingClientFactory):
 if __name__ == "__main__":
     server = "irc.cat.pdx.edu"
     port = 6697
-    nickname = "last_"
-    channels = ["#botgrounds"]
+    nickname = "last"
+    channels = ["#Music", "#botgrounds"]
     factory = BotFactory(nickname, channels)
     reactor.connectSSL(server, port, factory, ssl.ClientContextFactory())
     reactor.run()

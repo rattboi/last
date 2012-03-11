@@ -9,46 +9,48 @@ class Commands(object):
         self.bot = bot
         self.commands = "all start with '!': l, lp, set <username>, help"
 
-    def command_l(self, contact, args):
+    def _decode(self, track=None, artist=None):
+        if type(track) is unicode:
+            track = track.encode("utf-8")
+        if type(artist) is unicode:
+            artist = artist.encode("utf-8")
+        return track, artist
+
+    def _last_wrap(cmd):
+        def api_tries(self, contact, msg):
+            try:
+                now = contact.last.get_now_playing()
+                if now is not None:
+                    reply = "now playing: "
+                else:
+                    now = contact.last.get_recent_tracks(limit=1)[0].track
+                    reply = "last played: "
+            except AttributeError:
+                reply = "username for %s not set, use !set" % contact.nick
+            else:
+                try:
+                    reply += cmd(self, now, msg)
+                except AttributeError:
+                    reply = "no track info found"
+            self.bot.msg(contact, reply)
+        return api_tries
+
+    @_last_wrap
+    def command_l(self, now, args):
         """shows now playing"""
-        try:
-            now = contact.last.get_now_playing()
-        except AttributeError:
-            reply = "username for %s not set, use !set" % contact.nick
-        else:
-            try:
-                track = now.get_name()
-                artist = now.get_artist().get_name()
+        track = now.get_name()
+        artist = now.get_artist().get_name()
+        track, artist = self._decode(track=track, artist=artist)
+        return "'%s' by %s" % (track, artist)
 
-                if type(track) is unicode:
-                    track = track.encode("utf-8")
-                if type(artist) is unicode:
-                    artist = artist.encode("utf-8")
-
-                reply = "'%s' by %s" % (track, artist)
-            except AttributeError:
-                reply = "not currently scrobbling"
-        self.bot.msg(contact, reply)
-
-    def command_lp(self, contact, args):
+    @_last_wrap
+    def command_lp(self, now, args):
         """karma's now playing"""
-        try:
-            now = contact.last.get_now_playing()
-        except AttributeError:
-            reply = "username for %s not set, use !set" % contact.nick
-        else:
-            try:
-                artist = now.get_artist().get_name()
-
-                if type(artist) is unicode:
-                    artist = artist.encode("utf-8")
-
-                if len(artist.split()) > 1:
-                    artist = "(%s)" % artist
-                reply = "%s++" % artist
-            except AttributeError:
-                reply = "not currently scrobbling"
-        self.bot.msg(contact, reply)
+        artist = now.get_artist().get_name()
+        _, artist = self._decode(artist=artist)
+        if len(artist.split()) > 1:
+            artist = "(%s)" % artist
+        return "%s++" % artist
 
     def command_set(self, contact, args):
         """sets <username> for nick"""
