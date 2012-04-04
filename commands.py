@@ -8,7 +8,7 @@ class Commands(object):
 
     def __init__(self, bot):
         self.bot = bot
-        self.commands = "all start with '#': l, lp, set <username>, help"
+        self.commands = "!l, !lp, !set <username>, !source, !help"
 
     def _decode(self, track=None, artist=None):
         if type(track) is unicode:
@@ -28,7 +28,7 @@ class Commands(object):
                     now = contact.last.get_recent_tracks(limit=1)[0].track
                     reply = "last played: "
             except AttributeError:
-                reply = "username for %s not set, use #set" % contact.nick
+                reply = "username for %s not set, use !set" % contact.nick
             else:
                 try:
                     reply += cmd(self, now, msg)
@@ -63,6 +63,9 @@ class Commands(object):
         self.bot.db.set(contact.user, contact)
         self.bot.msg(contact, "%s set to: %s" % (contact.nick, args))
 
+    def command_source(self, contact, args):
+        self.bot.msg(contact, "https://github.com/dzhurley/last")
+
     def command_help(self, contact, args):
         """display help"""
         args = args.split()
@@ -75,10 +78,10 @@ class Commands(object):
                 self.bot.msg(contact, "%s: %s" % (cmd, cmd_help))
             except AttributeError:
                 self.bot.msg(contact,
-                             "%s isn't a command, try '#help'" % cmd)
+                             "%s isn't a command, try '!help'" % cmd)
 
     def parse(self, contact, msg):
-        if msg.startswith("#"):
+        if msg.startswith("!"):
             msg = msg[1:]
         cmd, _, args = msg.partition(" ")
 
@@ -86,4 +89,4 @@ class Commands(object):
             meth = getattr(self, "command_" + cmd.lower())
             return meth(contact, args)
         except AttributeError:
-            self.bot.msg(contact, "%s isn't a command, try '#help'" % cmd)
+            self.bot.msg(contact, "%s isn't a command, try '!help'" % cmd)

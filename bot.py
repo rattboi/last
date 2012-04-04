@@ -67,7 +67,7 @@ class Bot(irc.IRCClient):
             contact.private = self._isPrivate(contact.nick, channel)
             self.db.set(contact.user, contact)
 
-        if contact.private or message.startswith("#"):
+        if contact.private or message.startswith("!"):
             self.commands.parse(contact, message)
 
 
@@ -94,8 +94,8 @@ if __name__ == "__main__":
 
     server = "irc.cat.pdx.edu"
     port = 6697
-    nickname = "last_"
-    channels = ["#botgrounds"]
+    nickname = "last"
+    channels = ["Music", "#botgrounds"]
     factory = BotFactory(nickname, channels)
 
     reactor.connectSSL(server, port, factory, ssl.ClientContextFactory())
