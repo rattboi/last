@@ -10,8 +10,14 @@ import secrets
 
 
 class Contact(object):
+    """One user's identity to the Bot
+
+    This keeps track of a user's current info for the Bot, including last.fm
+    account info and current channel for messaging.
+    """
 
     def __init__(self, user, channel):
+        """set initial context of user"""
         self.user = user
         self.channel = channel
         self.nick = self._nick(user)
@@ -23,15 +29,24 @@ class Contact(object):
                 % (self.user, self.channel, self.nick, self.last, self.private))
 
     def _nick(self, user):
+        """trim hostmask"""
         return user.split('!', 1)[0]
 
     def setLastUser(self, last):
+        """set last.fm info"""
         self.last = last
 
 
 class Bot(irc.IRCClient):
+    """Core Bot events, subclassed from Twisted's IRCClient
+
+    Respond to privmsgs in channels and wrap self.msg to delegate replies
+    based on the context (query versus public channel). This also maintains
+    the Redis and last.fm connections while creating contacts as users talk.
+    """
 
     def __init__(self, nickname, chans, fact):
+        """initialize the Bot info, Redis client, and last.fm connection"""
         self.nickname = nickname
         self.chans = chans
         self.factory = fact
@@ -43,6 +58,7 @@ class Bot(irc.IRCClient):
                                          password_hash=secrets.password_hash)
 
     def _isPrivate(self, nick, channel):
+        """sets the private context based on channel or user"""
         return (channel == self.nickname and nick != self.nickname)
 
     def signedOn(self):
@@ -50,10 +66,16 @@ class Bot(irc.IRCClient):
             self.join(chan)
 
     def msg(self, contact, message):
+        """wraps self.msg to delegate the reply"""
         channel = contact.nick if contact.private else contact.channel
         irc.IRCClient.msg(self, channel, message)
 
     def privmsg(self, user, channel, message):
+        """manages contacts based on message and dispatches it to Commands
+
+        Interface with Redis for getting, or creating, the Contact and setting
+        its context, then passing it off to be parsed.
+        """
         contact = self.db.get(user)
 
         # update private context for replies to existing contact
@@ -67,11 +89,13 @@ class Bot(irc.IRCClient):
             contact.private = self._isPrivate(contact.nick, channel)
             self.db.set(contact.user, contact)
 
+        # only respond if it's properly said
         if contact.private or message.startswith("!"):
             self.commands.parse(contact, message)
 
 
 class BotFactory(ReconnectingClientFactory):
+    """factory for Bots, with reconnection action"""
 
     protocol = Bot
 
@@ -89,14 +113,17 @@ class BotFactory(ReconnectingClientFactory):
         reactor.stop()
 
 if __name__ == "__main__":
+    # start the Redis server
     from subprocess import call
     call(["redis-server", "redis.conf"])
 
+    # set IRC info for Bot connections
     server = "irc.cat.pdx.edu"
     port = 6697
     nickname = "last"
     channels = ["Music", "#botgrounds"]
     factory = BotFactory(nickname, channels)
 
+    # start it
     reactor.connectSSL(server, port, factory, ssl.ClientContextFactory())
     reactor.run()
