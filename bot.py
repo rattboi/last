@@ -4,6 +4,7 @@ from twisted.internet import ssl, reactor
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.words.protocols import irc
 from commands import Commands
+from db import Contacts
 import pylast
 import secrets
 
@@ -34,7 +35,7 @@ class Bot(irc.IRCClient):
         self.nickname = nickname
         self.chans = chans
         self.factory = fact
-        self.contacts = {}
+        self.db = Contacts()
         self.commands = Commands(self)
         self.last = pylast.LastFMNetwork(api_key=secrets.API_KEY,
                                          api_secret=secrets.API_SECRET,
@@ -53,7 +54,7 @@ class Bot(irc.IRCClient):
         irc.IRCClient.msg(self, channel, message)
 
     def privmsg(self, user, channel, message):
-        contact = self.contacts.get(user, None)
+        contact = self.db.get(user)
 
         # update private context for replies to existing contact
         if contact:
@@ -64,7 +65,7 @@ class Bot(irc.IRCClient):
         else:
             contact = Contact(user, channel)
             contact.private = self._isPrivate(contact.nick, channel)
-            self.contacts[contact.user] = contact
+            self.db.set(contact.user, contact)
 
         if contact.private or message.startswith("#"):
             self.commands.parse(contact, message)
@@ -88,10 +89,14 @@ class BotFactory(ReconnectingClientFactory):
         reactor.stop()
 
 if __name__ == "__main__":
+    from subprocess import call
+    call(["redis-server", "redis.conf"])
+
     server = "irc.cat.pdx.edu"
     port = 6697
     nickname = "last_"
     channels = ["#botgrounds"]
     factory = BotFactory(nickname, channels)
+
     reactor.connectSSL(server, port, factory, ssl.ClientContextFactory())
     reactor.run()

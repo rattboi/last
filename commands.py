@@ -60,6 +60,7 @@ class Commands(object):
             self.bot.msg(contact, "found too many args, only need <username>")
             return
         contact.setLastUser(User(args, self.bot.last))
+        self.bot.db.set(contact.user, contact)
         self.bot.msg(contact, "%s set to: %s" % (contact.nick, args))
 
     def command_help(self, contact, args):
