@@ -1,5 +1,6 @@
 # where the magic happens
 
+import re
 from pylast import User
 from functools import wraps
 
@@ -67,7 +68,7 @@ class Commands(object):
         _, artist = self._decode(artist=artist)
 
         # wrap multiple words in parenthesis for karmabot
-        if len(artist.split()) > 1:
+        if len(re.findall('\w+', artist)) > 1:
             artist = "(%s)" % artist
         return "%s++" % artist
 
