@@ -120,8 +120,8 @@ if __name__ == "__main__":
     # set IRC info for Bot connections
     server = "irc.cat.pdx.edu"
     port = 6697
-    nickname = "last"
-    channels = ["Music", "#botgrounds"]
+    nickname = "last-rattboi"
+    channels = ["#botgrounds"]
     factory = BotFactory(nickname, channels)
 
     # start it
