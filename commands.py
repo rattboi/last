@@ -15,7 +15,7 @@ class Commands(object):
     def __init__(self, bot):
         """sets the bot connection and help info"""
         self.bot = bot
-        self.commands = "!l, !lp, !set <username>, !source, !help"
+        self.commands = "!l, !ly, !lp, !set <username>, !source, !help"
 
     def _decode(self, track=None, artist=None):
         """make sure the replies play nice with unicode"""
