@@ -90,7 +90,7 @@ class Bot(irc.IRCClient):
             self.db.set(contact.user, contact)
 
         # only respond if it's properly said
-        if contact.private or message.startswith("`"):
+        if contact.private or message.startswith("!"):
             self.commands.parse(contact, message)
 
 
