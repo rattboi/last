@@ -3,7 +3,7 @@
 import re
 from pylast import User
 from functools import wraps
-
+from youtube import Youtube
 
 class Commands(object):
     """Bot command parsing and execution
@@ -59,7 +59,9 @@ class Commands(object):
         track = now.get_name()
         artist = now.get_artist().get_name()
         track, artist = self._decode(track=track, artist=artist)
-        return "'%s' by %s" % (track, artist)
+        yt = Youtube()
+        url = yt.get_link(track, artist)
+        return "'%s' by %s [%s]" % (track, artist, url)
 
     @_last_wrap
     def command_lp(self, now, args):
