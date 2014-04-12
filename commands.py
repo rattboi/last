@@ -53,12 +53,22 @@ class Commands(object):
             self.bot.msg(contact, reply)
         return api_tries
 
-    @_last_wrap
-    def command_l(self, now, args):
-        """shows now playing (with youtube link)"""
+    def get_now_info(self, now, args):
+        """ gets the current artist and track from last """
         track = now.get_name()
         artist = now.get_artist().get_name()
         track, artist = self._decode(track=track, artist=artist)
+        return (track, artist)
+
+    @_last_wrap
+    def command_l(self, now, args):
+        """shows now playing"""
+        return "'%s' by %s" % self.get_now_info(now,args)
+
+    @_last_wrap
+    def command_ly(self,now,args):
+        """shows now playing (with youtube link)"""
+        track, artist = self.get_now_info(now,args)
         yt = Youtube()
         url = yt.get_link(track, artist)
         return "'%s' by %s [%s]" % (track, artist, url)
