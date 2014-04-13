@@ -97,7 +97,7 @@ class Commands(object):
 
     def command_source(self, contact, args):
         """github link to source"""
-        self.bot.msg(contact, "https://github.com/rattboi/last (fork of https://github.com/dzhurley/last)")
+        self.bot.msg(contact, "https://github.com/dzhurley/last")
 
     def command_help(self, contact, args):
         """display help"""

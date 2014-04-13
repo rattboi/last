@@ -12,7 +12,6 @@ class Youtube(object):
         r = requests.get(query)
         json_data = json.loads(r.text)
         yt_id = json_data['data']['items'][0]['id']
-        print yt_id
         url = "https://youtu.be/" + yt_id
         if type(url) is unicode:
             url = url.encode("utf-8")
