@@ -3,7 +3,6 @@
 import re
 from pylast import User
 from functools import wraps
-from youtube import Youtube
 
 class Commands(object):
     """Bot command parsing and execution
@@ -69,8 +68,7 @@ class Commands(object):
     def command_ly(self,now,args):
         """shows now playing (with youtube link)"""
         track, artist = self.get_now_info(now,args)
-        yt = Youtube()
-        url = yt.get_link(track, artist)
+        url = self.bot.youtube.get_link(track, artist)
         return "'%s' by %s [%s]" % (track, artist, url)
 
     @_last_wrap
