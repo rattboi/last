@@ -4,7 +4,6 @@ import re
 from pylast import User
 from functools import wraps
 
-
 class Commands(object):
     """Bot command parsing and execution
 
@@ -15,7 +14,7 @@ class Commands(object):
     def __init__(self, bot):
         """sets the bot connection and help info"""
         self.bot = bot
-        self.commands = "!l, !lp, !set <username>, !source, !help"
+        self.commands = "!l, !ly, !lp, !set <username>, !source, !help"
 
     def _decode(self, track=None, artist=None):
         """make sure the replies play nice with unicode"""
@@ -53,13 +52,24 @@ class Commands(object):
             self.bot.msg(contact, reply)
         return api_tries
 
-    @_last_wrap
-    def command_l(self, now, args):
-        """shows now playing"""
+    def get_now_info(self, now, args):
+        """ gets the current artist and track from last """
         track = now.get_name()
         artist = now.get_artist().get_name()
         track, artist = self._decode(track=track, artist=artist)
-        return "'%s' by %s" % (track, artist)
+        return (track, artist)
+
+    @_last_wrap
+    def command_l(self, now, args):
+        """shows now playing"""
+        return "'%s' by %s" % self.get_now_info(now,args)
+
+    @_last_wrap
+    def command_ly(self,now,args):
+        """shows now playing (with youtube link)"""
+        track, artist = self.get_now_info(now,args)
+        url = self.bot.youtube.get_link(track, artist)
+        return "'%s' by %s [%s]" % (track, artist, url)
 
     @_last_wrap
     def command_lp(self, now, args):

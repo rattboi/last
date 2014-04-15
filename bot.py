@@ -4,6 +4,7 @@ from twisted.internet import ssl, reactor
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.words.protocols import irc
 from commands import Commands
+from youtube import Youtube
 from db import Contacts
 import pylast
 import secrets
@@ -51,6 +52,7 @@ class Bot(irc.IRCClient):
         self.chans = chans
         self.factory = fact
         self.db = Contacts()
+        self.youtube = Youtube()
         self.commands = Commands(self)
         self.last = pylast.LastFMNetwork(api_key=secrets.API_KEY,
                                          api_secret=secrets.API_SECRET,
