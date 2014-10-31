@@ -4,6 +4,7 @@ import re
 from pylast import User
 from functools import wraps
 
+
 class Commands(object):
     """Bot command parsing and execution
 
@@ -62,12 +63,12 @@ class Commands(object):
     @_last_wrap
     def command_l(self, now, args):
         """shows now playing"""
-        return "'%s' by %s" % self.get_now_info(now,args)
+        return "'%s' by %s" % self.get_now_info(now, args)
 
     @_last_wrap
-    def command_ly(self,now,args):
+    def command_ly(self, now, args):
         """shows now playing (with youtube link)"""
-        track, artist = self.get_now_info(now,args)
+        track, artist = self.get_now_info(now, args)
         url = self.bot.youtube.get_link(track, artist)
         return "'%s' by %s [%s]" % (track, artist, url)
 
@@ -81,6 +82,16 @@ class Commands(object):
         if len(re.findall('\w+', artist)) > 1:
             artist = "(%s)" % artist
         return "%s++" % artist
+
+    @_last_wrap
+    def command_lyp(self, now, args):
+        track, artist = self.get_now_info(now, args)
+        url = self.bot.youtube.get_link(track, artist)
+
+        # wrap multiple words in parenthesis for karmabot
+        if len(re.findall('\w+', artist)) > 1:
+            artist = "(%s)" % artist
+        return "'%s' by %s++ [%s]" % (track, artist, url)
 
     def command_set(self, contact, args):
         """sets <username> for nick"""
