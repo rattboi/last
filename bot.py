@@ -51,7 +51,7 @@ class Bot(irc.IRCClient):
         self.chans = chans
         self.factory = fact
         self.db = Contacts()
-        self.youtube = Youtube()
+        self.youtube = Youtube(os.environ.get('YOUTUBE_API_KEY'))
         self.commands = Commands(self)
         self.last = pylast.LastFMNetwork(api_key=os.environ.get('LAST_API_KEY'),
                                          api_secret=os.environ.get('LAST_API_SECRET'),
