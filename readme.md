@@ -6,10 +6,6 @@
 
 You need to set up a few heroku config options:
 
-libffi is a dependency, so you need this buildpack to successfully add libffi to paths during build
-
-`heroku config:set BUILDPACK_URL=git://github.com/kennethjiang/heroku-buildpack-python-libffi.git`
-
 You need a redis instance to store the IRC/Last.fm username mappings. You can use a free redistogo heroku addon for this.
 
 `heroku addons:add redistogo`
@@ -31,3 +27,7 @@ You need to set the following environment variables:
 | LAST_API_SECRET   | Last.fm's API secret                                                                          |
 | LAST_USER         | Last.fm username                                                                              |
 | LAST_PASS_HASH    | Last.fm password                                                                              |
+
+| Yout API info     |                                                                                               |
+|-------------------|-----------------------------------------------------------------------------------------------|
+| YOUTUBE_API_KEY   | Youtube Developer API key                                                                     |
