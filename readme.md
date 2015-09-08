@@ -1,18 +1,8 @@
 # last replacement for #music using [pylast](http://code.google.com/p/pylast/), [redis](http://redis.io/), and [twisted](http://twistedmatrix.com/trac/)
 
-### Modified to deploy to Heroku
-
-## Heroku Configuration
-
-You need to set up a few heroku config options:
-
-You need a redis instance to store the IRC/Last.fm username mappings. You can use a free redistogo heroku addon for this.
-
-`heroku addons:add redistogo`
-
 ## Last-bot configuration
 
-You need to set the following environment variables:
+You need to set the following variables in a file called secrets.py:
 
 |IRC connection info|                                                                                               |
 |-------------------|-----------------------------------------------------------------------------------------------|
