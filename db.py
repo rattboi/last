@@ -1,8 +1,7 @@
 # redis backend for username persistence
 
 import cPickle
-import redis
-import os
+from redis import Redis
 
 class Contacts(dict):
     """Redis backend to make IRC Contacts persistent
@@ -12,9 +11,7 @@ class Contacts(dict):
 
     def __init__(self):
         """start the Redis client"""
-        #self.redis = Redis(host="localhost", port=6379, db=0)
-        redis_url = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
-        self.redis = redis.from_url(redis_url)
+        self.redis = Redis(host="localhost", port=6379, db=0)
         self.save = self.redis.save
 
     def get(self, username):

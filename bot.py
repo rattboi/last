@@ -6,6 +6,7 @@ from twisted.words.protocols import irc
 from commands import Commands
 from youtube import Youtube
 from db import Contacts
+import secrets
 import pylast
 import os
 
@@ -51,12 +52,12 @@ class Bot(irc.IRCClient):
         self.chans = chans
         self.factory = fact
         self.db = Contacts()
-        self.youtube = Youtube(os.environ.get('YOUTUBE_API_KEY'))
+        self.youtube = Youtube(secrets.YOUTUBE_API_KEY)
         self.commands = Commands(self)
-        self.last = pylast.LastFMNetwork(api_key=os.environ.get('LAST_API_KEY'),
-                                         api_secret=os.environ.get('LAST_API_SECRET'),
-                                         username=os.environ.get('LAST_USER'),
-                                         password_hash=os.environ.get('LAST_PASS_HASH'))
+        self.last = pylast.LastFMNetwork(api_key=secrets.LAST_API_KEY,
+                                         api_secret=secrets.LAST_API_SECRET,
+                                         username=secrets.LAST_USER,
+                                         password_hash=secrets.LAST_PASS_HASH)
 
     def _isPrivate(self, nick, channel):
         """sets the private context based on channel or user"""
@@ -114,11 +115,14 @@ class BotFactory(ReconnectingClientFactory):
         reactor.stop()
 
 if __name__ == "__main__":
+    from subprocess import call
+    call(["redis-server", "redis.conf"])
+
     # set IRC info for Bot connections
-    server = os.environ.get('IRC_SERVER')
-    port = int(os.environ.get('IRC_PORT'))
-    nickname = os.environ.get('IRC_NICK')
-    channels = os.environ.get('IRC_CHANS').split(",")
+    server = secrets.IRC_SERVER
+    port = int(secrets.IRC_PORT)
+    nickname = secrets.IRC_NICK
+    channels = secrets.IRC_CHANS.split(",")
     factory = BotFactory(nickname, channels)
 
     # start it
